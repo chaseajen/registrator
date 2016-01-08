@@ -3,6 +3,7 @@ package bridge
 import (
 	"strconv"
 	"strings"
+    "log"
 
 	"github.com/cenkalti/backoff"
 	dockerapi "github.com/fsouza/go-dockerclient"
@@ -82,6 +83,11 @@ func servicePort(container *dockerapi.Container, port dockerapi.Port, published 
     exposedIp = container.NetworkSettings.Networks[network].IPAddress
     if exposedIp == "" && network == "bridge" {
         exposedIp = container.NetworkSettings.IPAddress
+    }
+    
+    // Log networks available
+    for name, network := range container.NetworkSettings.Networks {
+        log.Println("container", container.ID[:12], "has IP", network.IPAddress, "on network", name)
     }
     
 	return ServicePort{
